@@ -1,0 +1,13 @@
+name: LastOne
+version: 1.0
+main: lastOne.Main
+
+commands:
+  lastone:
+    description: "lastOne"
+    
+  reset:
+    description: "reset"
+  
+  quest:
+    description: "quest"
