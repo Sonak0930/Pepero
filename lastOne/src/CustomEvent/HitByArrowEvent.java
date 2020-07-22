@@ -28,6 +28,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -43,13 +45,14 @@ import org.jetbrains.annotations.Nullable;
 public class HitByArrowEvent implements Listener {
 
 	
-	
+
 	@EventHandler
 	public void DamageHandler(EntityDamageByEntityEvent e)
 	{
 		
 		if(e.getDamager() instanceof Arrow)
 		{
+			
 			//엔티티를 타격한 대상 (여기서는 화살)
 			Arrow projectile =  (Arrow) e.getDamager();
 					
@@ -58,6 +61,8 @@ public class HitByArrowEvent implements Listener {
 					
 			//투사체를 발사한 플레이어 정보
 			Player p= (Player) projectile.getShooter();
+			PlayerInventory inven = p.getInventory();
+			
 			
 			
 			if(hitentity.getFireTicks() > 0)

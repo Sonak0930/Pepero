@@ -40,10 +40,10 @@ public class SkillTreeSelect implements Listener
 			}
 			else if (p.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.YELLOW + "파괴 마법사 - 기술특성 책"))
 			{
-				openGUI(CreateItem.createItem("복수", ChatColor.GOLD, Material.FIRE_CHARGE, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 1", ChatColor.WHITE + "적 타격 시, 25%확률로 '강화화상' 상태에 빠트립니다.", ChatColor.WHITE + "재사용 대기시간 : 0.5초", false),
-						CreateItem.createItem("희망", ChatColor.GOLD, Material.MUSIC_DISC_PIGSTEP, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 2",ChatColor.WHITE + "적 타격 시, 적의 위치를 2초간 보이게 하고 이동속도를 늦춥니다.", ChatColor.WHITE + "재사용 대기시간 : 0.5초", false),
-						CreateItem.createItem("분노", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 마법 직격타 피해 : 2 ",ChatColor.WHITE + "적 타격 시, 2초간 기절실명에 빠트립니다.", ChatColor.WHITE + "재사용 대기시간 : 7초", false),
-						CreateItem.createItem("열정", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 마법 직격타 피해 : 6",ChatColor.WHITE + "재사용 대기시간 : 10초", ChatColor.WHITE + "", false),
+				openGUI(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.FIRE_CHARGE, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 1", ChatColor.WHITE + "투사체를 발사해 맞은 적에게 '강화화상' 상태에 빠트립니다.", ChatColor.WHITE + "강화화상 : 체력비례피해(현재체력의 10%피해 + 이전 데미지의 10%)를 지속적으로 입힙니다. 화상상태의 적을 투사체로 타격하면 3의 추가데미지를 줍니다. ", false),
+						CreateItem.createItem("음파", ChatColor.GOLD, Material.MUSIC_DISC_PIGSTEP, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 3",ChatColor.WHITE + "음파 투시 : 적 타격 시, 적의 위치를 2초간 보이게 하고 이동속도를 늦춥니다.", ChatColor.WHITE + "동화 : 음파를 맞춘 적에게 음파를 맞추면 피해량이 20% 증가하고, 피해량의 30%에 해당하는 보호막을 얻습니다.", false),
+						CreateItem.createItem("나비폭죽", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 마법 직격타 피해 : 6 ",ChatColor.WHITE + "근처의 적에게 미사일을 3개 발사해 6의 피해를 입힙니다. 최대 대상 : 3명", ChatColor.WHITE + "강화화상상태의 적에게는 투사체 8개를 발사하며, 투사체가 폭발을 입히면서 최대체력에 비례한 피해를 입힙니다. 최대 대상 : 3명 ", false),
+						CreateItem.createItem("광속입자파", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 마법 직격타 피해 : 30",ChatColor.WHITE + "전방 직선범위에 마법 포격을 발사해 6의 피해를 5번 입힙니다. 범위 안의 적은 1.5초동안 기절합니다. 이 피해는 35%의 저항을 무시합니다.", ChatColor.WHITE + "음파에 노출된 적인경우 자신의 보호막을 모두 소모해 상대방에게 고정피해를 입힙니다. ", false),
 						CreateItem.createItem("확인", ChatColor.GREEN, Material.GREEN_CONCRETE, "", "", "", false),
 						CreateItem.createItem("취소", ChatColor.RED, Material.RED_CONCRETE, "", "", "", false), p);
 				
@@ -166,7 +166,7 @@ public class SkillTreeSelect implements Listener
 				}
 			}
 			e.setCurrentItem(CreateItem.createItem("선택됨", ChatColor.WHITE, Material.BARRIER, "", "", "", false));
-			e.getInventory().setItem(15, CreateItem.createItem("희망", ChatColor.GOLD, Material.MUSIC_DISC_PIGSTEP, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 2",ChatColor.WHITE + "적 타격 시, 적의 위치를 2초간 보이게 하고 이동속도를 늦춥니다.", ChatColor.WHITE + "재사용 대기시간 : 0.5초", false));
+			e.getInventory().setItem(15, CreateItem.createItem("음파", ChatColor.GOLD, Material.MUSIC_DISC_PIGSTEP, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 2",ChatColor.WHITE + "적 타격 시, 적의 위치를 2초간 보이게 하고 이동속도를 늦춥니다.", ChatColor.WHITE + "재사용 대기시간 : 0.5초", false));
 		}
 		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "희망"))
 		{
@@ -179,7 +179,7 @@ public class SkillTreeSelect implements Listener
 				}
 			}
 			e.setCurrentItem(CreateItem.createItem("선택됨", ChatColor.WHITE, Material.BARRIER, "", "", "", false));
-			e.getInventory().setItem(11, CreateItem.createItem("복수", ChatColor.GOLD, Material.FIRE_CHARGE, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 1", ChatColor.WHITE + "적 타격 시, 25%확률로 '강화화상' 상태에 빠트립니다.", ChatColor.WHITE + "재사용 대기시간 : 0.5초", false));
+			e.getInventory().setItem(11, CreateItem.createItem("혼돈", ChatColor.GOLD, Material.FIRE_CHARGE, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 1", ChatColor.WHITE + "투사체를 발사해 맞은 적에게 '강화화상' 상태에 빠트립니다.", ChatColor.WHITE + "강화화상 : 체력비례피해(현재체력의 10%피해 + 이전 데미지의 10%)를 지속적으로 입힙니다. 화상상태의 적을 투사체로 타격하면 3의 추가데미지를 줍니다. ", false));
 		}
 		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.BLUE + "분노"))
 		{

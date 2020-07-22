@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -33,7 +34,7 @@ public class Skill_ButterflySupplantation  implements Listener {
 		//손에 아이템을 들고 있는 경우 확인.
 				if (!e.getHand().equals(EquipmentSlot.HAND)) return;
 				
-				if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.GOLD + "혼돈")) return;
+				if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.DARK_PURPLE + "Butterflying FireWork")) return;
 				//플레이어 체크
 				
 				PlayerStatus playerStatus = null;
@@ -75,9 +76,11 @@ public class Skill_ButterflySupplantation  implements Listener {
 							butterfly.remove();
 						}
 					}, 100);
-	}
+				}
 
-}
+	}
 
 	
-	}
+}
+
+

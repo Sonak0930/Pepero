@@ -80,12 +80,12 @@ public class Main extends JavaPlugin implements Listener{
 		AllitemList.add(CreateItem.createItem("칠흑검", ChatColor.RED, Material.DIAMOND_SWORD, "", "", "", true));
 		AllitemList.add(CreateItem.createItem("표식파괴", ChatColor.RED, Material.ENCHANTED_BOOK, "", "", "", true));
 		AllitemList.add(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.BLAZE_ROD, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("대재앙", ChatColor.GOLD, Material.ENCHANTED_BOOK, "", "", "", true));
+		AllitemList.add(CreateItem.createItem("Butterflying FireWork", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL_FAN, ChatColor.DARK_AQUA+"Progressive Active Skill",ChatColor.AQUA+ "근처의 적에게 나비 폭죽을 날려 피해를 입힌다. ", ChatColor.AQUA+"대상이 여럿일 경우 복수의 대상에게 2/3의 피해를 입힌다.", true));
 		AllitemList.add(CreateItem.createItem("속사", ChatColor.GREEN, Material.CROSSBOW, "", "", "", true));
 		AllitemList.add(CreateItem.createItem("일촉즉발", ChatColor.GREEN, Material.ENCHANTED_BOOK, "", "", "", true));
 		AllitemList.add(CreateItem.createItem("수확", ChatColor.BLUE, Material.BLAZE_ROD, "", "", "", true));
 		AllitemList.add(CreateItem.createItem("사령술", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("Butterflying FireWork", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL_FAN, ChatColor.DARK_AQUA+"Progressive Active Skill",ChatColor.AQUA+ "근처의 적에게 나비 폭죽을 날려 피해를 입힌다. ", ChatColor.AQUA+"대상이 여럿일 경우 복수의 대상에게 2/3의 피해를 입힌다.", true));
+		
 	}
 	
 	@Override
@@ -485,7 +485,25 @@ public class Main extends JavaPlugin implements Listener{
 				//음파
 				else 
 				{
+					//플레이어와 velocityEvent를 받아와서 바라보는 방향 설정.
+					Vector v1 = p1.getEyeLocation().getDirection();
 					
+					v1.add(v1);
+					v1.add(v1);
+					Arrow chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
+					chaos.setGravity(false);
+					chaos.setDamage(3);
+					
+					chaos.setShooter(p1);
+					
+					
+					Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
+					{
+						public void run()
+						{
+							chaos.remove();
+						}
+					}, 100);
 				}
 			
 					
