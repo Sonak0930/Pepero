@@ -37,14 +37,14 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import CustomEvent.DestroyMagicianuseItem;
-import CustomEvent.HitByArrowEvent;
 import CustomEvent.EntityDeath;
-import CustomEvent.ForestArcheruseItem;
 import CustomEvent.PlayerQuit;
 import CustomEvent.SkillTreeSelect;
-import CustomEvent.SoulHealeruseItem;
 import CustomEvent.ThrownItem;
+import SkillUseEvent.DestroyMagicianuseItem;
+import SkillUseEvent.ForestArcheruseItem;
+import SkillUseEvent.HitByArrowEvent;
+import SkillUseEvent.SoulHealeruseItem;
 
 
 public class Main extends JavaPlugin implements Listener{
@@ -77,14 +77,14 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(new HitByArrowEvent(), this);
 		
-		AllitemList.add(CreateItem.createItem("칠흑검", ChatColor.RED, Material.DIAMOND_SWORD, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("표식파괴", ChatColor.RED, Material.ENCHANTED_BOOK, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.BLAZE_ROD, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("Butterflying FireWork", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL_FAN, ChatColor.DARK_AQUA+"Progressive Active Skill",ChatColor.AQUA+ "근처의 적에게 나비 폭죽을 날려 피해를 입힌다. ", ChatColor.AQUA+"대상이 여럿일 경우 복수의 대상에게 2/3의 피해를 입힌다.", true));
-		AllitemList.add(CreateItem.createItem("속사", ChatColor.GREEN, Material.CROSSBOW, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("일촉즉발", ChatColor.GREEN, Material.ENCHANTED_BOOK, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("수확", ChatColor.BLUE, Material.BLAZE_ROD, "", "", "", true));
-		AllitemList.add(CreateItem.createItem("사령술", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", "", "", true));
+		AllitemList.add(CreateItem.createItem("칠흑검", ChatColor.RED, Material.DIAMOND_SWORD, "",  true));
+		AllitemList.add(CreateItem.createItem("표식파괴", ChatColor.RED, Material.ENCHANTED_BOOK, "", true));
+		AllitemList.add(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.BLAZE_ROD, "", true));
+		AllitemList.add(CreateItem.createItem("Butterflying FireWork", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL_FAN, ChatColor.DARK_AQUA+"Progressive Active Skill\n"+ChatColor.AQUA+ "근처의 적에게 나비 폭죽을 날려 피해를 입힌다.\n"+ ChatColor.AQUA+"대상이 여럿일 경우 복수의 대상에게 2/3의 피해를 입힌다.\n", true));
+		AllitemList.add(CreateItem.createItem("속사", ChatColor.GREEN, Material.CROSSBOW, "", true));
+		AllitemList.add(CreateItem.createItem("일촉즉발", ChatColor.GREEN, Material.ENCHANTED_BOOK, "", true));
+		AllitemList.add(CreateItem.createItem("수확", ChatColor.BLUE, Material.BLAZE_ROD, "",  true));
+		AllitemList.add(CreateItem.createItem("사령술", ChatColor.BLUE, Material.ENCHANTED_BOOK, "",  true));
 		
 	}
 	

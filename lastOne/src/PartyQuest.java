@@ -58,7 +58,7 @@ public class PartyQuest extends JavaPlugin implements Listener {
 			p.closeInventory();
 			
 			CreateItem wheat = new CreateItem();
-			ItemStack wheatstack = wheat.createItem("우리밀 64개", ChatColor.WHITE, Material.WHEAT, "우리밀은 늘 환영이랍니다. ", "밀가루 빼빼로의 재료", "", false);
+			ItemStack wheatstack = wheat.createItem("우리밀 64개\n", ChatColor.WHITE, Material.WHEAT, "우리밀은 늘 환영이랍니다.\n"+ "밀가루 빼빼로의 재료\n", false);
 			commercial =  Bukkit.createInventory(null, 81, "Commercial");
 			commercial.setItem(10, wheatstack);
 			

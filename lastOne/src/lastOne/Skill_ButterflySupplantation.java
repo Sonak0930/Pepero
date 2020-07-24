@@ -34,7 +34,7 @@ public class Skill_ButterflySupplantation  implements Listener {
 		//손에 아이템을 들고 있는 경우 확인.
 				if (!e.getHand().equals(EquipmentSlot.HAND)) return;
 				
-				if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.DARK_PURPLE + "Butterflying FireWork")) return;
+				if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.DARK_PURPLE + "나비 폭죽")) return;
 				//플레이어 체크
 				
 				PlayerStatus playerStatus = null;

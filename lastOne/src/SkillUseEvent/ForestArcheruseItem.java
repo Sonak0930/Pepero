@@ -1,4 +1,4 @@
-package CustomEvent;
+package SkillUseEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +23,7 @@ public class ForestArcheruseItem implements Listener
 			{
 				if (ps.getPlayer().getName().equals(p.getName()))
 				{
-					if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("속사", ChatColor.GREEN, Material.CROSSBOW, "", "", "", true)))
+					if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("속사", ChatColor.GREEN, Material.CROSSBOW, "", true)))
 					{
 						if (ps.isWriteSkillTree().equals(true))
 						{
@@ -41,7 +41,7 @@ public class ForestArcheruseItem implements Listener
 							p.sendMessage("기술특성을 먼저 작성해주세요!");
 						}
 					}
-					else if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("일촉즉발", ChatColor.GREEN, Material.ENCHANTED_BOOK, "", "", "", true)))
+					else if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("일촉즉발", ChatColor.GREEN, Material.ENCHANTED_BOOK, "", true)))
 					{
 						if (ps.isWriteSkillTree().equals(true))
 						{

@@ -1,4 +1,4 @@
-package CustomEvent;
+package SkillUseEvent;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,7 +11,7 @@ import lastOne.CreateItem;
 import lastOne.Main;
 import lastOne.PlayerStatus;
 
-public class SoulHealeruseItem implements Listener
+public class DestroyMagicianuseItem implements Listener
 {
 	@EventHandler
 	public void useItem(PlayerInteractEvent e)
@@ -23,7 +23,7 @@ public class SoulHealeruseItem implements Listener
 			{
 				if (ps.getPlayer().getName().equals(p.getName()))
 				{
-					if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("수확", ChatColor.BLUE, Material.BLAZE_ROD, "", "", "", true)))
+					if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.BLAZE_ROD, "", true)))
 					{
 						if (ps.isWriteSkillTree().equals(true))
 						{
@@ -41,7 +41,7 @@ public class SoulHealeruseItem implements Listener
 							p.sendMessage("기술특성을 먼저 작성해주세요!");
 						}
 					}
-					else if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("사령술", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", "", "", true)))
+					else if (p.getInventory().getItemInMainHand().equals(CreateItem.createItem("대재앙", ChatColor.GOLD, Material.ENCHANTED_BOOK, "", true)))
 					{
 						if (ps.isWriteSkillTree().equals(true))
 						{
