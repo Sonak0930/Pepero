@@ -4,12 +4,14 @@ package SkillUseEvent;
 import java.io.File;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import javax.naming.NamingException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Server;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
@@ -38,13 +40,16 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import lastOne.Main;
+import lastOne.PlayerStatus;
+
 
  
 	
 
 public class HitByArrowEvent implements Listener {
 
-	
+	private PlayerStatus ps;
 
 	@EventHandler
 	public void DamageHandler(EntityDamageByEntityEvent e)
@@ -65,19 +70,52 @@ public class HitByArrowEvent implements Listener {
 			
 			
 			
-			if(hitentity.getFireTicks() > 0)
-			{
-				projectile.setDamage(2);
-			}
-			hitentity.setFireTicks(100);
+			//플레이어 스테이터스 리스트에서, 현재 이벤트 발생 플레이어의 스테이터스를 가져옴.
+			// 정보를 가져오는 시간은 O(1)이 소요됨.
 			
-			hitentity.setGlowing(true);
+			ArrayList<PlayerStatus> playerlist = Main.getPlayerInfoList();
+			
+			
+			for (PlayerStatus stat : playerlist)
+			{
+				if(stat.getPlayer().getName() == p.getName())
+				{
+					ps = stat;
+					break;
+				}
+			}
+		
+			//스타일 기본패시브가 혼돈인 경우
+			if(ps.getFirstSkill())
+			{
+				hitentity.setFireTicks(100);
+				hitentity.setGlowing(true);
+				hitentity.playEffect(EntityEffect.HURT);
+				hitentity.playEffect(EntityEffect.LOVE_HEARTS);
+				if(hitentity.getFireTicks() > 0)
+				{
+					projectile.setDamage(2);
+				}
+				
+			}
+			
+			//스타일 기본 패시브가 음파인 경우.
+			else
+			{
+				
+			}
+			
 		}
 		
 		
 		
 	}
 	
+	private void getPlayerInfoList() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@EventHandler
 	public void BurningEventHandler(EntityDamageEvent e)
 	{
@@ -94,7 +132,7 @@ public class HitByArrowEvent implements Listener {
 				
 				try {
 					double health = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-					Bukkit.broadcastMessage(""+health);
+					
 					if(entity.getFireTicks() <= 20)
 					{
 							entity.setGlowing(false);
