@@ -1,4 +1,4 @@
-package lastOne;
+package Projectile;
 
 import java.util.ArrayList;
 

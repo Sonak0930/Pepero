@@ -7,9 +7,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import Player.PlayerStatus;
 import lastOne.CreateItem;
 import lastOne.Main;
-import lastOne.PlayerStatus;
 
 public class ForestArcheruseItem implements Listener
 {

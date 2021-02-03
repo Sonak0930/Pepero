@@ -1,4 +1,4 @@
-name: LastOne
+name: lastOne
 version: 1.0
 main: lastOne.Main
 
@@ -9,5 +9,11 @@ commands:
   reset:
     description: "reset"
   
-  quest:
-    description: "quest"
+  create_party:
+    description: "create party"
+  join_party:
+    description: "party join"
+  party:
+    description: "manage party"
+  c:
+    description: "nothing"

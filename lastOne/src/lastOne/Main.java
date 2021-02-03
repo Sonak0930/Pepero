@@ -7,9 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Projectile.ButterflyingFirework;
+import Projectile.Skill_Chaos_Projectile;
+import Role.ClassSelector;
+import Role.GiveWeapon;
+import Role.SkillTreeSelect;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.EntityEffect;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -30,9 +36,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -41,13 +50,15 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.datafixers.Products.P2;
 import CustomEvent.EntityDeath;
-import CustomEvent.PlayerQuit;
-import CustomEvent.SkillTreeSelect;
 import CustomEvent.ThrownItem;
-
+import Party.Party;
+import Party.PartyInventoryClickEvent;
+import Player.PlayerStatus;
 import SkillUseEvent.ForestArcheruseItem;
-import SkillUseEvent.HitByArrowEvent;
+import SkillUseEvent.FireMagiciainSKillEvent;
+import SkillUseEvent.SoulHealerSkillUseEvent;
 import SkillUseEvent.SoulHealeruseItem;
 import org.bukkit.World;
 
@@ -55,21 +66,37 @@ import org.bukkit.World;
 public class Main extends JavaPlugin implements Listener{
 	
 	public static ArrayList<PlayerStatus> GamePlayerInfoList = new ArrayList<PlayerStatus>();
-	public static ArrayList<Player> GameJoinList = new ArrayList<Player>();
-	public static ArrayList<Player> deathPlayerList = new ArrayList<Player>();
+
 	public static ArrayList<ItemStack> AllitemList = new ArrayList<ItemStack>();
 	public static ArrayList<LivingEntity> AttackKnightLightning = new ArrayList<LivingEntity>();
 	public static boolean isStart = false;
-	
+	private static ArrayList<Party> partyList = new ArrayList<Party>();
 	private Player p1;
-	private PlayerStatus playerstatus;
+	private static PlayerStatus playerstatus;
 	
+	private Inventory inven;
+	boolean terminated = true;
+	
+	
+	public static PlayerStatus findPlayerStatusByName(String name)
+	{
+		
+		for(PlayerStatus ps : GamePlayerInfoList)
+		{
+			if(ps.getPlayer().getName().contentEquals(name)) return ps;
+		}
+		
+		return null;
+	}
 	public static ArrayList<PlayerStatus> getPlayerInfoList ()
 	{
 		return GamePlayerInfoList;
 	}
 	@Override
 	public void onEnable() {
+		
+		Player instancep = Bukkit.getPlayer("isoboroo");
+		instancep.setGameMode(GameMode.CREATIVE);
 		// TODO Auto-generated method stub
 		System.out.println("***최후의 1인 켜짐***");
 		Bukkit.getPluginManager().registerEvents(new ThrownItem(), this);
@@ -77,39 +104,71 @@ public class Main extends JavaPlugin implements Listener{
 
 		Bukkit.getPluginManager().registerEvents(new ForestArcheruseItem(), this);
 		Bukkit.getPluginManager().registerEvents(new SoulHealeruseItem(), this);
-		Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
 		Bukkit.getPluginManager().registerEvents(new SkillTreeSelect(), this);
 		Bukkit.getPluginManager().registerEvents(new EntityDeath(), this);
 		Bukkit.getPluginManager().registerEvents(this, this);
-		Bukkit.getPluginManager().registerEvents(new HitByArrowEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new FireMagiciainSKillEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new SoulHealerSkillUseEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new PartyInventoryClickEvent(), this);
+		
 		
 		AllitemList.add(CreateItem.createItem("칠흑검", ChatColor.RED, Material.DIAMOND_SWORD, "",  true));
 		AllitemList.add(CreateItem.createItem("표식파괴", ChatColor.RED, Material.ENCHANTED_BOOK, "", true));
-		AllitemList.add(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.BLAZE_ROD,
-				ChatColor.WHITE + "기본 : 마법 직격타 피해 : 1\n"
-			+ ChatColor.WHITE + "투사체를 발사해 맞은 적에게 '강화화상' 상태에 빠트립니다.\n"
-			+ ChatColor.WHITE + "강화화상 : 체력비례피해를 지속적으로 입힙니다.\n"
-			+ ChatColor.WHITE+ "화상상태의 적을 투사체로 타격하면 3의 추가데미지를 줍니다. ", false));
-		AllitemList.add(CreateItem.createItem("음파", ChatColor.GOLD, Material.MUSIC_DISC_PIGSTEP, 
-				ChatColor.WHITE + "기본 : 마법 직격타 피해 : 2\n"
-				+ChatColor.WHITE + "적 타격 시, 적의 위치를 2초간 보이게 하고 이동속도를 늦춥니다.\n"
-				+ ChatColor.WHITE + "재사용 대기시간 : 0.5초", false));
-		AllitemList.add( CreateItem.createItem("나비폭죽", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL,
-				ChatColor.WHITE + "기술 : 마법 직격타 피해 : 6 \n"
-		+ChatColor.WHITE + "근처의 적에게 미사일을 3개 발사해 6의 피해를 입힙니다.\n"
-		+ChatColor.LIGHT_PURPLE+ " 최대 대상 : 3명\n"
-		+ ChatColor.WHITE + "강화화상상태의 적에게는 투사체 8개를 발사하며 "
-		+ChatColor.AQUA+ "\n투사체가 폭발을 입히면서 최대체력에 비례한 피해를 입힙니다. \n"
-		+ChatColor.LIGHT_PURPLE+ "최대 대상 : 3명 ", false));
-		AllitemList.add(CreateItem.createItem("광속입자파", ChatColor.BLUE, Material.SEA_LANTERN, ChatColor.WHITE
-				+ "기술 : 마법 직격타 피해 : 30\n"+ChatColor.WHITE + "전방 직선범위에 마법 포격을 발사해 6의 피해를 5번 입힙니다.\n범위 안의 적은 1.5초동안 기절합니다. "
-				+ "\n이 피해는 35%의 저항을 무시합니다."+ ChatColor.WHITE + "음파에 노출된 적인경우 자신의 보호막을 모두 소모해 \n상대방에게 고정피해를 입힙니다. ", false));
-		AllitemList.add(CreateItem.createItem("속사", ChatColor.GREEN, Material.CROSSBOW, "", true));
-		AllitemList.add(CreateItem.createItem("일촉즉발", ChatColor.GREEN, Material.ENCHANTED_BOOK, "", true));
-		AllitemList.add(CreateItem.createItem("수확", ChatColor.BLUE, Material.BLAZE_ROD, "",  true));
-		AllitemList.add(CreateItem.createItem("사령술", ChatColor.BLUE, Material.ENCHANTED_BOOK, "",  true));
+		AllitemList.add(CreateItem.createItem("맹렬", ChatColor.BLUE, Material.ENCHANTED_BOOK,"" , true));
+		AllitemList.add(CreateItem.createItem("저주", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", true));
+		
+		AllitemList.add(CreateItem.createItem("혼돈", ChatColor.GOLD, Material.BLAZE_ROD,"", true));
+		AllitemList.add(CreateItem.createItem("음파", ChatColor.GOLD, Material.MUSIC_DISC_PIGSTEP, "", true));
+		AllitemList.add( CreateItem.createItem("나비폭죽", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL,"", false));
+		AllitemList.add(CreateItem.createItem("광속입자파", ChatColor.BLUE, Material.SEA_LANTERN, "", false));
+		
+		AllitemList.add(CreateItem.createItem("노력", ChatColor.GREEN, Material.BOW, "", false));
+		AllitemList.add(CreateItem.createItem("재능", ChatColor.GREEN, Material.CROSSBOW,"", false));
+		AllitemList.add(CreateItem.createItem("활기", ChatColor.BLUE, Material.ENCHANTED_BOOK,"" , false));
+		AllitemList.add(CreateItem.createItem("음침", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", false));
+		
+		AllitemList.add(CreateItem.createItem("숭고한 희생", ChatColor.GREEN, Material.ENCHANTED_GOLDEN_APPLE, "", true));
+		AllitemList.add(CreateItem.createItem("단죄", ChatColor.GREEN, Material.BLAZE_POWDER, "", true));
+		AllitemList.add(CreateItem.createItem("신의 구원", ChatColor.BLUE, Material.NETHER_STAR, "",  true));
+		AllitemList.add(CreateItem.createItem("천뇌", ChatColor.BLUE, Material.FIREWORK_ROCKET, "",  true));
+		
+		
+		
 		
 	}
+	//파티 이름으로 파티 찾기.
+		public static Party findPartyByName(String name)
+		{
+			for(Party party: partyList)
+			{
+				if( party.getPartyName().contentEquals(name)) return party;
+					
+				
+			}return null;
+		}	
+		//모든 파티에대해 플레이어가 속해있는지 테스트.
+		public static Party getPartywithIncludedPlayer(Player player)
+		{
+			for(Party party: partyList)
+			{
+				if(party.isPlayerIncluded(player)) return party;
+			}
+				
+			return null;
+		}
+	
+	public static PlayerStatus findPlayerStat(Player player)
+	{
+		for(PlayerStatus ps : GamePlayerInfoList)
+		{
+			if(ps.getPlayer().getName().contentEquals(player.getName()))
+			{
+				playerstatus = ps;
+			}
+		}
+		return playerstatus;
+	}
+	
 	
 	
 	
@@ -131,123 +190,169 @@ public class Main extends JavaPlugin implements Listener{
 				sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 예시) /lastone <옵션>");
 				sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 실행 가능한 옵션 : join | left | start | reset | list");
 			}
-			else
+			
+			
+			else if (args[0].equalsIgnoreCase("join"))
 			{
-				if (args[0].equalsIgnoreCase("join"))
+				if (sender instanceof Player)
 				{
-					if (sender instanceof Player)
-					{
-						Player p = (Player) sender;
-						for (Player tp : GameJoinList)
-						{
-							if (tp.equals(p))
-							{
-								p.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 이미 게임에 참가하였습니다!");
-								return true;
-							}
-						}
-						
-						if (isStart)
-						{
-							p.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 이미 게임이 진행 중입니다. 진행 중인 게임이 끝날 때 까지 기다려주세요.");
-							return false;
-						}
-						p.getInventory().clear();
-						ClassSelector.openClassSelectorGUI(p);
-						p.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.LIGHT_PURPLE + " 참가를 위해선 직업을 선택해주세요.");
-					}
-					else
-					{
-						sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 이 옵션은 커맨드 창에서 할 수 없습니다! 플레이어가 시도해주세요.");
-					}
+					p1 = (Player)sender;
+					p1.getInventory().clear();
+					ClassSelector.openClassSelectorGUI(p1);
+					p1.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.LIGHT_PURPLE + " 참가를 위해선 직업을 선택해주세요.");
 				}
-				else if (args[0].equalsIgnoreCase("start"))
-				{
-					if (GameJoinList.size() >= 1)
-					{
-						if (isStart)
-						{
-							sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 이미 게임이 진행 중입니다. 진행 중인 게임이 끝날 때 까지 기다려주세요.");
-							return false;
-						}
-						sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 준비중인 기능! 기다려주세요. 감사합니다.");
-						isStart = true;
-						for (Player tp : GameJoinList)
-						{
-							GiveWeapon giveItem = new GiveWeapon();
-							giveItem.giveItem(tp);
-						}
-						//이부분쯤에서 경기장으로 TP
-					}
-					else
-					{
-						sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 플레이어가 2(1)명이상 참가해야 시작 할 수 있습니다.");
-					}
-				}
-				else if (args[0].equalsIgnoreCase("left"))
-				{
-					if (sender instanceof Player)
-					{
-						Player p = (Player) sender;
-						for (Player tp : GameJoinList)
-						{
-							if (tp.equals(p))
-							{
-								GameJoinList.remove(p);
-								p.getInventory().clear();
-								p.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.RED + " 게임 참가 취소가 완료되었습니다.");
-								return true;
-							}
-						}
-						p.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 당신은 최후의1인에 참가하지 않았습니다.");
-					}
-					else
-					{
-						sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 이 옵션은 커맨드 창에서 할 수 없습니다! 플레이어가 시도해주세요.");
-					}
-				}
-				else if (args[0].equalsIgnoreCase("reset"))
-				{
-					isStart = false;
-					GameJoinList.clear();
-					GamePlayerInfoList.clear();
-					sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GREEN + " 플레이어 리스트 초기화.");
-				}
-				else if (args[0].equalsIgnoreCase("list"))
-				{
-					int index = 0;
-					sender.sendMessage(ChatColor.DARK_GRAY + "-----참가한 플레이어 리스트-----");
-					for (Player tp : GameJoinList)
-					{
-						index += 1;
-						sender.sendMessage(ChatColor.GREEN + " " + index + "] " + ChatColor.LIGHT_PURPLE + tp.getName());
-					}
-					sender.sendMessage(ChatColor.DARK_GRAY + "-------------------------");
-				}
-				else if (args[0].equalsIgnoreCase("tree"))
-				{
-					for (PlayerStatus ps : GamePlayerInfoList)
-					{
-						sender.sendMessage(ps.getPlayer().getName() + ", " + ps.getJob() + ", " + ps.getFirstSkill().toString() + ", " + ps.getSecondSkill().toString() + ", " + ps.isWriteSkillTree());
-					}
-				}
-				else
-				{
-					sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 알 수 없는 옵션입니다.");
-					sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 실행 가능한 옵션 : join | left | start | clear | list");
-				}
+					
 			}
+			else if (args[0].equalsIgnoreCase("start"))
+			{
+					GiveWeapon giveItem = new GiveWeapon();
+					giveItem.giveItem((Player)sender);
+			}
+				
+			else 
+			{
+				sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 알 수 없는 옵션입니다.");
+				sender.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.GRAY + " 실행 가능한 옵션 : join | left | start | clear | list");
+			}
+				
+				
 		}
+		
 		
 		
 		
 		if (command.getName().equalsIgnoreCase("reset"))
 		{
 			isStart = false;
-			GameJoinList.clear();
 			GamePlayerInfoList.clear();
 		}
-		return true;
+		
+		if (command.getName().equalsIgnoreCase("c"))
+		{
+			Bukkit.getPlayer("isoboroo").setGameMode(GameMode.CREATIVE);
+		}
+	
+		
+		
+		if (command.getName().equalsIgnoreCase("create_party"))
+		{
+			try
+			{
+				//이름을 입력하지 않았다면 exception.
+				if(args[0] == null)
+				{
+					
+				}
+			}
+			
+			catch(Exception e)
+			{
+				sender.sendMessage("파티 이름을 입력해주세요.");
+				return false;
+			}
+			try
+			{
+				//이 이름의 파티가 널이 아니라면.
+				if(findPartyByName(args[0]) != null) 
+				{
+					sender.sendMessage("이미 동일한 이름의 파티가 존재합니다.");
+					return false;
+				}
+			}
+			catch(Exception e)
+			{
+				
+			}
+			
+			try {
+				//이 플레이어가 포함된 파티가 널이 아니라면.
+				if(getPartywithIncludedPlayer((Player)sender) != null)
+				{
+					sender.sendMessage("이미 소속된 파티가 있습니다. party exit을 통해 파티를 나간 후 다시 시도하세요");
+					return false;
+				}
+			}
+			
+			catch(Exception e)
+			{
+				
+			}
+			
+			
+		if(command.getName().contentEquals("join_party"))
+		{
+			String partyname = args[0];
+			try
+			{
+				//이름을 입력하지 않았다면 exception.
+				if(partyname == null)
+				{
+					
+				}
+			}
+			
+			catch(Exception e)
+			{
+				sender.sendMessage("가입할 파티 명을 입력해주세요.");
+				return false;
+			}
+			
+			try {
+				//이 플레이어가 포함된 파티가 널이 아니라면.
+				if(getPartywithIncludedPlayer((Player)sender) != null)
+				{
+					sender.sendMessage("이미 소속된 파티가 있습니다. party exit을 통해 파티를 나간 후 다시 시도하세요");
+					return false;
+				}
+			}
+			
+			catch(Exception e)
+			{
+				Party party = findPartyByName(partyname);
+				party.add(findPlayerStat((Player)sender));
+				sender.sendMessage("파티에 가입했습니다.");
+			}
+
+		}
+			
+				
+				
+				//플레이어 이름으로 파티를 생성합니다.
+				Party my_party = new Party();
+				
+				playerstatus = findPlayerStat((Player)sender);
+				my_party.setPartyName(args[0]);
+				my_party.add(playerstatus);
+				partyList.add(my_party);
+				sender.sendMessage(args[0]+" 파티가 개설되었습니다.");
+				
+			return true;
+			
+		}
+			
+		if(command.getName().contentEquals("party"))
+		{
+			Player p = (Player)sender;
+			inven = Bukkit.createInventory(null, 27, "PartyQuest");
+			
+			ItemStack findParty = CreateItem.createItem("파티 관리", ChatColor.WHITE, Material.RED_MUSHROOM_BLOCK, 
+					"파티를 생성합니다. \n"
+					+ChatColor.BLUE+ ".. party open[이름]을 통해 파티 추가  \n"
+					+ChatColor.RED+ ".. party exit 을 통해 파티 탈퇴가 가능합니다.\n"
+					+ "생성된 파티가 있을 경우 파티 창이 나타납니다."
+							, false);
+			
+			ItemStack findQuest = CreateItem.createItem("파티퀘스트 검색", ChatColor.YELLOW, Material.BOOK,
+					"파티퀘스트를 검색합니다.\n"
+					+"파티가 없을 경우 검색할 수 없습니다.", false);
+			
+			ItemStack find_TheOtherParty = CreateItem.createItem("다른 파티 검색", ChatColor.AQUA, Material.FEATHER, "", false);
+			inven.setItem(13,findParty); 
+			inven.setItem(11,findQuest);
+			inven.setItem(15, find_TheOtherParty);
+			p.openInventory(inven);
+		}
+		return false;		
 	}
 	
 	
@@ -257,219 +362,19 @@ public class Main extends JavaPlugin implements Listener{
 	
 	// 돌격기사
 
-	@EventHandler
-	public void damage(EntityDamageByEntityEvent e)
-	{
-		if (!(e.getDamager().getType().equals(EntityType.PLAYER))) return;
-		
-		try
-		{
-			if (!((LivingEntity) e.getEntity() instanceof LivingEntity)) return;
-		}
-		catch(Exception e1)
-		{
-			return;
-		}
-		
-		Player Damager = (Player) e.getDamager();
-		PlayerStatus DamagerStatus = null;
-		
-		LivingEntity Victim = (LivingEntity) e.getEntity();
-		PlayerStatus VictimStatus = null; //default
-		
-		for (PlayerStatus PS : GamePlayerInfoList)
-		{
-			if (PS.getPlayer().getName().equals(Victim.getName()))
-			{
-				VictimStatus = PS;
-			}
-			
-			if (PS.getPlayer().getName().equals(Damager.getName()))
-			{
-				DamagerStatus = PS;
-			}
-		}
-		
-		if (!Damager.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "칠흑검")) return;
-			
-		if (!isStart) return;
-		
-		if (!DamagerStatus.isWriteSkillTree())
-		{
-			e.setCancelled(true);
-			Damager.sendMessage("기술특성을 작성해야 기술을 사용할 수 있습니다!");
-			return;
-		}
-		
-		
-		
-		
-		
-		
-		
-		if (DamagerStatus.getFirstSkill())
-		{
-			//검기
-
-			if (VictimStatus == null)
-			{
-				Victim.damage(4);
-			}
-			else
-			{
-				Victim.damage(4 * VictimStatus.getPhysicsDefensive());
-			}
-			
-			int random = (int) (Math.random() * 10);
-			if (random > 0) return;
-			AttackKnightLightning.add(Victim);
-			if (Victim.getType().equals(EntityType.PLAYER)) Victim.sendMessage("당신은 " + Damager.getName() + "(돌격기사)에게 찍혔습니다!");
-			Damager.sendMessage(Victim.getName() + "에게 표식을 남겼습니다!");
-
-			Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
-					{
-						public void run()
-						{
-							if(Victim.isDead())
-							{
-								return;
-							}
-							Victim.getWorld().strikeLightning(Victim.getLocation());
-							AttackKnightLightning.remove(Victim);
-						}
-					}, 200);
-			
-			return;
-		}
-		else if (!DamagerStatus.getFirstSkill())
-		{
-			//원한
-			
-			if (VictimStatus == null)
-			{
-				Victim.damage(2);
-			}
-			else
-			{
-				Victim.damage(2 * VictimStatus.getPhysicsDefensive());
-			}
-			
-			
-			int random = (int) (Math.random() * 2);
-			if (random == 0) return;
-			AttackKnightLightning.add(Victim);
-			if (Victim.getType().equals(EntityType.PLAYER)) Victim.sendMessage("당신은 " + Damager.getName() + "(돌격기사)에게 찍혔습니다!");
-			Damager.sendMessage(Victim.getName() + "에게 표식을 남겼습니다!");
-			
-			Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
-					{
-						public void run()
-						{
-							if(Victim.isDead())
-							{
-								return;
-							}
-							Victim.getWorld().strikeLightning(Victim.getLocation());
-							AttackKnightLightning.remove(Victim);
-						}
-					}, 200);
-			
-			return;
-		}
-	}
 	
-	
-	@EventHandler
-	public void attackknightUseItem(PlayerInteractEvent e)
-	{
-		if (!e.getHand().equals(EquipmentSlot.HAND)) return;
-		
-		if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) 
-			{
-			
-			return;
-			}
-			
-		PlayerStatus playerStatus = null;
-		if (!e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "표식파괴")) return;
-		
-		if (!isStart) return;
-		
-		
-		for (PlayerStatus PS : GamePlayerInfoList)
-		{
-			if (!PS.isWriteSkillTree())
-			{
-				e.getPlayer().sendMessage("기술특성을 작성해야 기술을 사용할 수 있습니다!");
-				return;
-			}
-			else
-			{
-				playerStatus = PS;
-				break;
-			}
-		}
-		
-		if (AttackKnightLightning.size() == 0)
-		{
-			e.getPlayer().sendMessage("표식이 붙은 적이 없습니다!");
-			return;
-		}
-		
-		if (playerStatus.getSecondSkill())
-		{
-			//맹렬
-			double temp = 0;
-			LivingEntity tempPlayer = null;
-			for (LivingEntity LE : AttackKnightLightning)
-			{
-				double Coor = 0;
-				
-				Coor += Math.abs(LE.getLocation().getX() - e.getPlayer().getLocation().getX());
-				Coor += Math.abs(LE.getLocation().getY() - e.getPlayer().getLocation().getY());
-				Coor += Math.abs(LE.getLocation().getZ() - e.getPlayer().getLocation().getZ());
-				if (Coor >= temp)
-				{
-					temp = Coor;
-					tempPlayer = LE;
-				}
-			}
-			
-			e.getPlayer().sendMessage(tempPlayer.getName() + "에게 돌진합니다!");
-			e.getPlayer().teleport(tempPlayer);
-			
-			return;
-		}
-		else
-		{
-			//저주
-			e.getPlayer().sendMessage("표식이 붙은 적의 이동속도를 늦춥니다!");
-			for (LivingEntity LE : AttackKnightLightning)
-			{
-				LE.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 5, 2, false, false, true));
-			}
-			return;
-		}
-	}
 	
 	// 파괴마법사
 
 	@EventHandler
 	public void magicianUseItem(PlayerInteractEvent e)
 	{
-		String itemName;
 		
-		try
-		{
-			itemName = e.getPlayer().getInventory().getItemInMainHand().getItemMeta().getDisplayName();
-		}
-		
-		catch(Exception ex) 
-		{
+		if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) 
+			{
+			
 			return;
-		}
-		
-		
+			}
 		for (PlayerStatus PS : GamePlayerInfoList)
 		{
 			if (PS.getPlayer().getName().equals(e.getPlayer().getName()))
@@ -486,8 +391,9 @@ public class Main extends JavaPlugin implements Listener{
 		}
 		
 		p1 = e.getPlayer();
-	
+		FireMagiciainSKillEvent.setDamager(p1);
 		
+		e.setCancelled(true);
 		
 		
 		
@@ -495,7 +401,7 @@ public class Main extends JavaPlugin implements Listener{
 		//혼돈
 		if(playerstatus.getFirstSkill())
 		{
-			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD+"혼돈"))
+			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.BLUE+"혼돈"))
 			{
 				//플레이어와 velocityEvent를 받아와서 바라보는 방향 설정.
 				Vector v1 = p1.getEyeLocation().getDirection();
@@ -505,10 +411,10 @@ public class Main extends JavaPlugin implements Listener{
 				Arrow chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
 				chaos.setGravity(false);
 				chaos.setDamage(0);
-						
 				chaos.setShooter(p1);
-						
-						
+	
+				p1.spawnParticle(Particle.BUBBLE_POP, p1.getLocation().getX(), p1.getLocation().getY(), p1.getLocation().getZ(), 5, 1, 1, 1 );
+			
 				Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
 				{
 					public void run()
@@ -517,6 +423,8 @@ public class Main extends JavaPlugin implements Listener{
 					}
 				}, 100);
 			}
+		}
+			
 					
 					
 				
@@ -525,9 +433,8 @@ public class Main extends JavaPlugin implements Listener{
 		//음파
 		else 
 		{
-			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase( ChatColor.GOLD+"음파"))
+			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase( ChatColor.BLUE +"음파"))
 			{
-
 				//플레이어와 velocityEvent를 받아와서 바라보는 방향 설정.
 				Vector v1 = p1.getEyeLocation().getDirection();
 						
@@ -535,11 +442,9 @@ public class Main extends JavaPlugin implements Listener{
 				v1.add(v1);
 				Arrow chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
 				chaos.setGravity(false);
-				chaos.setDamage(3);
-						
+				chaos.setDamage(3);		
 				chaos.setShooter(p1);
-						
-						
+		
 				Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
 				{
 					public void run()
@@ -556,12 +461,10 @@ public class Main extends JavaPlugin implements Listener{
 				
 		//나비폭죽
 		if(playerstatus.getSecondSkill())
-		{
-					
-			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_PURPLE+"나비폭죽"))
+		{	
+			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.BLUE+"나비폭죽"))
 			{
-
-				recursion(5);
+				butterfly(12);
 			}
 		}
 					
@@ -569,92 +472,195 @@ public class Main extends JavaPlugin implements Listener{
 		//광속입자파
 		else
 		{
-					
-		}
+			
+			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.BLUE+"광속입자파"))
+			{
+				lightparticle();
 				
-	}//get first skill
+			}
+		}
+	
+		
+		e.setCancelled(false);
+	
 
 }//event handler
 	
 		
-		
-	public void recursion(double time)	
+	//repeat time
+	public void butterfly(double time)	
 	{
 		if(time == 0) return;
 		
 		else
 		{
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("LastOne"), new Runnable() {
+			
+			//Worker thread 작성해서 0.3초마다 아래 블럭을 실행. 이때 플러그인네임이 라스트원이면 어디서든 이 코드를 실행가능.
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Bukkit.getPluginManager().getPlugin("lastOne"), new Runnable() {
 
 				@Override
 				public void run() {
 					
-					
+					//벡터를 생성.
 					Vector v1 = p1.getEyeLocation().getDirection();
 					
+					randomNumber ran1 = new randomNumber(3);
+					ran1.plusminus(2);
+					
+					//불렛 생성후 발사.
 					ShulkerBullet bullet = p1.launchProjectile(ButterflyingFirework.class, v1);
-					bullet.setTarget(getNearest(p1,15));
-					// TODO Auto-generated method stub
-					//투사체 발사시 원형으로 플레임 이펙트 발생.
+					
+					//불렛의 타겟을 p1을 중심으로 x y z 30크기의 정육면체 안의 가장 가까운 대상으로 지정
+					bullet.setTarget(getNearest(p1,30));
+					
+					bullet.setVelocity(new Vector(ran1.getNum(),ran1.getNum(),ran1.getNum()));
+					
+					//투사체 발사시 원형으로이펙트 발생.
 					for(int degree = 0; degree < 360; degree++)
 					{
+						//location
 						Location loc = bullet.getLocation();
+						
+						//라디안으로 값을 변환.
 						double radians = Math.toRadians(degree);
+						
+						//이펙트가 생길 좌표. 기존 좌표 + 라디안만큼의 반지름.을 더해 위치를 선정.
 						double x = loc.getX()+Math.cos(radians);
 						double z = loc.getY()+Math.sin(radians);
 						
-						Location loc2 = loc;
+						//로케이션 지정 이때 loc의 클론 값으로 사용.
+						Location loc2 = loc.clone();
 						loc2.setX(x);
 						loc2.setZ(z);
 						
-						randomNumber ran = new randomNumber(3);
-						ran.plusminus(3);
-						loc.getWorld().spawnParticle(Particle.FIREWORKS_SPARK,loc2,1,ran.getNum(),ran.getNum(),ran.getNum());
+						//p.getWorld.spawnParticle은 현재 문제가 있으므로 p.spawnParticle을 사용할 것.
 						
-						
+						p1.spawnParticle(Particle.HEART,loc2,1,1,1,1);
 						
 						
 					}
 					
-					recursion(time-1);
+					
+					//0.6초 간격으로 재귀호출하기 위함.
+					butterfly(time-1);
 				}
 				
-			},6);
+			},3);
+		
+		
 		}
 		
 	}
 	
+	public void lightparticle()
+	{
+		Vector v1 = p1.getEyeLocation().getDirection();
+		
+		v1.add(v1);
+		v1.add(v1);
+		Arrow chaos = p1.launchProjectile(Skill_Chaos_Projectile.class, v1);
+		
+		chaos.setGravity(false);
+		chaos.setDamage(3);		
+		chaos.setShooter(p1);
+		
+		ArrayList<Location> loclist = new ArrayList<Location>();
+		
+		Bukkit.getServer().getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("lastOne"), new Runnable()
+				{
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						loclist.add(chaos.getLocation());
+						Vector distance = loclist.get(0).toVector().subtract(p1.getLocation().toVector());
+						
+						Vector v = new Vector();
+						v.copy(distance);
+						v.normalize();
+						
+						p1.sendMessage("dist" + distance +" v " + v);
+						p1.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION,80,1));
+						
+						while(v.length() < distance.length())
+						{
+							chaos.getWorld().createExplosion(p1.getLocation().add(v.toLocation(p1.getWorld())), 1);
+							chaos.getWorld().spawnParticle(Particle.FIREWORKS_SPARK,p1.getLocation(v.toLocation(p1.getWorld())),100,3,3,3);
+							v.add(v);
+							
+						}
+							
+		
+		
+		
+					}
+				},55);	
+		
+		
 	
-	public Entity getNearest(Player player, double square)
+		
+	}
+				
+				
+		
+		
+
+		
+		
+	
+	
+	
+	public static Entity getNearest(Player player, double square)
 	{
 		Player p;
 		Entity nearest;
 		double s =  square;
 		
 		p = player;
-		Location median = p.getLocation();
+	
+		//근처 엔티티 목록을 받아오고.
+		ArrayList<Entity> enlist = (ArrayList<Entity>) p.getNearbyEntities(s,s,s);
 		
-		World world = p.getWorld();
-		ArrayList<Entity> enlist = (ArrayList<Entity>) world.getNearbyEntities(median,s,s,s);
-		
+		//기본값은 0으로 하자.
 		nearest = enlist.get(0);
 		
-		if(enlist.size() <2) return p;
+		
+		
 		
 		for(Entity e : enlist)
 		{
+			try
+			{
+				LivingEntity livinge = (LivingEntity) e;
+			}
+			
+			catch(Exception err)
+			{
+				continue;
+			}
+			//만약에 자기자신이 대상이 되면 제외.
 			if(e.getName().equalsIgnoreCase(p.getName())) continue;
 			
+			
+			
+			
+			//만약 새로 검사하는 엔티티가, 가장 가까운 대상보다 가까운 경우, 가장 가까운 대상을 재설정.
 			if(e.getLocation().distance(p.getLocation()) < nearest.getLocation().distance(p.getLocation()))
 			{
-				
 				nearest = e;
 			}
 		}
 		
+		
 		return nearest;
 		
 	}
+	
+	
+		
+		
+	
 }
+
+
 
 

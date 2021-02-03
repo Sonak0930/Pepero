@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class ThrownItem implements Listener{
 	
+	/*
 	@EventHandler
 	public void isDropItem(PlayerDropItemEvent e)
 	{
@@ -29,5 +30,5 @@ public class ThrownItem implements Listener{
 		}
 		
 		else return;
-	}
+	}*/
 }
