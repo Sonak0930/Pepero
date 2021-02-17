@@ -26,6 +26,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -52,12 +53,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.Products.P2;
 import CustomEvent.EntityDeath;
-import CustomEvent.ThrownItem;
 import Party.Party;
 import Party.PartyInventoryClickEvent;
 import Player.PlayerStatus;
 import SkillUseEvent.ForestArcheruseItem;
-import SkillUseEvent.FireMagiciainSKillEvent;
+import SkillUseEvent.FireMagicianSKillEvent;
 import SkillUseEvent.SoulHealerSkillUseEvent;
 import SkillUseEvent.SoulHealeruseItem;
 import org.bukkit.World;
@@ -72,7 +72,7 @@ public class Main extends JavaPlugin implements Listener{
 	public static boolean isStart = false;
 	private static ArrayList<Party> partyList = new ArrayList<Party>();
 	private Player p1;
-	private static PlayerStatus playerstatus;
+	private static PlayerStatus ps;
 	
 	private Inventory inven;
 	boolean terminated = true;
@@ -99,7 +99,7 @@ public class Main extends JavaPlugin implements Listener{
 		instancep.setGameMode(GameMode.CREATIVE);
 		// TODO Auto-generated method stub
 		System.out.println("***최후의 1인 켜짐***");
-		Bukkit.getPluginManager().registerEvents(new ThrownItem(), this);
+		
 		Bukkit.getPluginManager().registerEvents(new ClassSelector(), this);
 
 		Bukkit.getPluginManager().registerEvents(new ForestArcheruseItem(), this);
@@ -107,7 +107,7 @@ public class Main extends JavaPlugin implements Listener{
 		Bukkit.getPluginManager().registerEvents(new SkillTreeSelect(), this);
 		Bukkit.getPluginManager().registerEvents(new EntityDeath(), this);
 		Bukkit.getPluginManager().registerEvents(this, this);
-		Bukkit.getPluginManager().registerEvents(new FireMagiciainSKillEvent(), this);
+		Bukkit.getPluginManager().registerEvents(new FireMagicianSKillEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new SoulHealerSkillUseEvent(), this);
 		Bukkit.getPluginManager().registerEvents(new PartyInventoryClickEvent(), this);
 		
@@ -122,8 +122,8 @@ public class Main extends JavaPlugin implements Listener{
 		AllitemList.add( CreateItem.createItem("나비폭죽", ChatColor.DARK_PURPLE, Material.BRAIN_CORAL,"", false));
 		AllitemList.add(CreateItem.createItem("광속입자파", ChatColor.BLUE, Material.SEA_LANTERN, "", false));
 		
-		AllitemList.add(CreateItem.createItem("노력", ChatColor.GREEN, Material.BOW, "", false));
-		AllitemList.add(CreateItem.createItem("재능", ChatColor.GREEN, Material.CROSSBOW,"", false));
+		AllitemList.add(CreateItem.createItem("정악", ChatColor.GREEN, Material.BOW, "", false));
+		AllitemList.add(CreateItem.createItem("아르페지오", ChatColor.GREEN, Material.CROSSBOW,"", false));
 		AllitemList.add(CreateItem.createItem("활기", ChatColor.BLUE, Material.ENCHANTED_BOOK,"" , false));
 		AllitemList.add(CreateItem.createItem("음침", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", false));
 		
@@ -159,14 +159,14 @@ public class Main extends JavaPlugin implements Listener{
 	
 	public static PlayerStatus findPlayerStat(Player player)
 	{
-		for(PlayerStatus ps : GamePlayerInfoList)
+		for(PlayerStatus playerstat : GamePlayerInfoList)
 		{
-			if(ps.getPlayer().getName().contentEquals(player.getName()))
+			if(playerstat.getPlayer().getName().contentEquals(player.getName()))
 			{
-				playerstatus = ps;
+				ps = playerstat;
 			}
 		}
-		return playerstatus;
+		return ps;
 	}
 	
 	
@@ -194,14 +194,10 @@ public class Main extends JavaPlugin implements Listener{
 			
 			else if (args[0].equalsIgnoreCase("join"))
 			{
-				if (sender instanceof Player)
-				{
 					p1 = (Player)sender;
 					p1.getInventory().clear();
 					ClassSelector.openClassSelectorGUI(p1);
 					p1.sendMessage(ChatColor.YELLOW + "[최후의 1인]" + ChatColor.LIGHT_PURPLE + " 참가를 위해선 직업을 선택해주세요.");
-				}
-					
 			}
 			else if (args[0].equalsIgnoreCase("start"))
 			{
@@ -225,6 +221,7 @@ public class Main extends JavaPlugin implements Listener{
 		{
 			isStart = false;
 			GamePlayerInfoList.clear();
+			partyList.clear();
 		}
 		
 		if (command.getName().equalsIgnoreCase("c"))
@@ -236,59 +233,58 @@ public class Main extends JavaPlugin implements Listener{
 		
 		if (command.getName().equalsIgnoreCase("create_party"))
 		{
+			int errorcode = 0;
 			try
 			{
 				//이름을 입력하지 않았다면 exception.
-				if(args[0] == null)
-				{
-					
-				}
+				if(args[0] == null);
+				errorcode = 1;
+				if(findPartyByName(args[0]) == null);
+				
 			}
-			
 			catch(Exception e)
 			{
-				sender.sendMessage("파티 이름을 입력해주세요.");
-				return false;
-			}
-			try
-			{
-				//이 이름의 파티가 널이 아니라면.
-				if(findPartyByName(args[0]) != null) 
+				if(errorcode == 0)
+				{
+					sender.sendMessage("파티 이름을 입력해주세요.");
+					return false;
+				}
+				else if(errorcode == 1)
 				{
 					sender.sendMessage("이미 동일한 이름의 파티가 존재합니다.");
 					return false;
 				}
 			}
-			catch(Exception e)
+			
+			//이 플레이어가 포함된 파티가 널이 아니라면.
+			if(getPartywithIncludedPlayer((Player)sender) != null)
 			{
-				
+				sender.sendMessage("이미 소속된 파티가 있습니다. party exit을 통해 파티를 나간 후 다시 시도하세요");
+				return false;
 			}
 			
-			try {
-				//이 플레이어가 포함된 파티가 널이 아니라면.
-				if(getPartywithIncludedPlayer((Player)sender) != null)
-				{
-					sender.sendMessage("이미 소속된 파티가 있습니다. party exit을 통해 파티를 나간 후 다시 시도하세요");
-					return false;
-				}
-			}
+			//플레이어 이름으로 파티를 생성합니다.
+			Party my_party = new Party();
 			
-			catch(Exception e)
-			{
-				
-			}
+			ps = findPlayerStat((Player)sender);
+			my_party.setPartyName(args[0]);
+			my_party.add(ps);
+			partyList.add(my_party);
+			sender.sendMessage(args[0]+" 파티가 개설되었습니다.");
+			
+			return true;
+		}
+			
 			
 			
 		if(command.getName().contentEquals("join_party"))
 		{
-			String partyname = args[0];
+			String partyname;
 			try
 			{
+				partyname = args[0];
 				//이름을 입력하지 않았다면 exception.
-				if(partyname == null)
-				{
-					
-				}
+				if(partyname == null);
 			}
 			
 			catch(Exception e)
@@ -296,38 +292,18 @@ public class Main extends JavaPlugin implements Listener{
 				sender.sendMessage("가입할 파티 명을 입력해주세요.");
 				return false;
 			}
-			
-			try {
-				//이 플레이어가 포함된 파티가 널이 아니라면.
-				if(getPartywithIncludedPlayer((Player)sender) != null)
-				{
-					sender.sendMessage("이미 소속된 파티가 있습니다. party exit을 통해 파티를 나간 후 다시 시도하세요");
-					return false;
-				}
-			}
-			
-			catch(Exception e)
+		
+			//이 플레이어가 포함된 파티가 널이 아니라면.
+			if(getPartywithIncludedPlayer((Player)sender) != null)
 			{
-				Party party = findPartyByName(partyname);
-				party.add(findPlayerStat((Player)sender));
-				sender.sendMessage("파티에 가입했습니다.");
+				sender.sendMessage("이미 소속된 파티가 있습니다. party exit을 통해 파티를 나간 후 다시 시도하세요");
+				return false;
 			}
+			Party party = findPartyByName(partyname);
+			party.add(findPlayerStat((Player)sender));
+			sender.sendMessage("파티에 가입했습니다.");
+			
 
-		}
-			
-				
-				
-				//플레이어 이름으로 파티를 생성합니다.
-				Party my_party = new Party();
-				
-				playerstatus = findPlayerStat((Player)sender);
-				my_party.setPartyName(args[0]);
-				my_party.add(playerstatus);
-				partyList.add(my_party);
-				sender.sendMessage(args[0]+" 파티가 개설되었습니다.");
-				
-			return true;
-			
 		}
 			
 		if(command.getName().contentEquals("party"))
@@ -370,28 +346,26 @@ public class Main extends JavaPlugin implements Listener{
 	public void magicianUseItem(PlayerInteractEvent e)
 	{
 		
-		if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) 
+		if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) return;
+		
+		try 
+		{
+			p1 = e.getPlayer();
+			ps = Main.findPlayerStat(e.getPlayer());
+			if (!ps.isWriteSkillTree())
 			{
+				e.getPlayer().sendMessage("기술특성을 작성해야 기술을 사용할 수 있습니다!");
+				return;
+			}
+		}
+		catch(Exception ex)
+		{
 			
-			return;
-			}
-		for (PlayerStatus PS : GamePlayerInfoList)
-		{
-			if (PS.getPlayer().getName().equals(e.getPlayer().getName()))
-			{
-				//현재 나의 플레이어 스테이터스를 playerStatus에 저장.
-				playerstatus = PS;		
-			}
 		}
 		
-		if (!playerstatus.isWriteSkillTree())
-		{
-			e.getPlayer().sendMessage("기술특성을 작성해야 기술을 사용할 수 있습니다!");
-			return;
-		}
 		
-		p1 = e.getPlayer();
-		FireMagiciainSKillEvent.setDamager(p1);
+		
+		FireMagicianSKillEvent.setDamager(p1);
 		
 		e.setCancelled(true);
 		
@@ -399,7 +373,7 @@ public class Main extends JavaPlugin implements Listener{
 		
 				
 		//혼돈
-		if(playerstatus.getFirstSkill())
+		if(ps.getFirstSkill())
 		{
 			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.BLUE+"혼돈"))
 			{
@@ -408,12 +382,10 @@ public class Main extends JavaPlugin implements Listener{
 						
 				v1.add(v1);
 				v1.add(v1);
-				Arrow chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
+				Fireball chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
 				chaos.setGravity(false);
-				chaos.setDamage(0);
 				chaos.setShooter(p1);
-	
-				p1.spawnParticle(Particle.BUBBLE_POP, p1.getLocation().getX(), p1.getLocation().getY(), p1.getLocation().getZ(), 5, 1, 1, 1 );
+				p1.spawnParticle(Particle.BUBBLE_POP, p1.getLocation(), 35, 1, 1, 1 );
 			
 				Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
 				{
@@ -440,9 +412,8 @@ public class Main extends JavaPlugin implements Listener{
 						
 				v1.add(v1);
 				v1.add(v1);
-				Arrow chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
-				chaos.setGravity(false);
-				chaos.setDamage(3);		
+				Fireball chaos = e.getPlayer().launchProjectile(Skill_Chaos_Projectile.class, v1);
+				chaos.setGravity(false);	
 				chaos.setShooter(p1);
 		
 				Bukkit.getServer().getScheduler().runTaskLater(this, new Runnable()
@@ -460,7 +431,7 @@ public class Main extends JavaPlugin implements Listener{
 				
 				
 		//나비폭죽
-		if(playerstatus.getSecondSkill())
+		if(ps.getSecondSkill())
 		{	
 			if(p1.getInventory().getItemInMainHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.BLUE+"나비폭죽"))
 			{
@@ -554,14 +525,14 @@ public class Main extends JavaPlugin implements Listener{
 	
 	public void lightparticle()
 	{
+		
 		Vector v1 = p1.getEyeLocation().getDirection();
 		
 		v1.add(v1);
 		v1.add(v1);
-		Arrow chaos = p1.launchProjectile(Skill_Chaos_Projectile.class, v1);
+		Fireball chaos = p1.launchProjectile(Skill_Chaos_Projectile.class, v1);
 		
-		chaos.setGravity(false);
-		chaos.setDamage(3);		
+		chaos.setGravity(false);		
 		chaos.setShooter(p1);
 		
 		ArrayList<Location> loclist = new ArrayList<Location>();
@@ -583,8 +554,9 @@ public class Main extends JavaPlugin implements Listener{
 						
 						while(v.length() < distance.length())
 						{
-							chaos.getWorld().createExplosion(p1.getLocation().add(v.toLocation(p1.getWorld())), 1);
+							chaos.getWorld().createExplosion(p1.getLocation().add(v.toLocation(p1.getWorld())), 16.0f);
 							chaos.getWorld().spawnParticle(Particle.FIREWORKS_SPARK,p1.getLocation(v.toLocation(p1.getWorld())),100,3,3,3);
+							chaos.getWorld().spawnParticle(Particle.EXPLOSION_HUGE,p1.getLocation(v.toLocation(p1.getWorld())),100,3,3,3);
 							v.add(v);
 							
 						}

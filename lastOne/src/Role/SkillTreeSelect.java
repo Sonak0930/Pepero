@@ -35,8 +35,19 @@ public class SkillTreeSelect implements Listener
 		wH1 =CreateItem.createItem("맹렬", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 표식이 남겨진 적중 가장 가까운 적에게 이동\n"+ChatColor.WHITE + "재사용 대기시간 : 7초\n"+ ChatColor.WHITE , false);
 		wH2 =CreateItem.createItem("저주", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 표식이 남겨진 적의 이동속도를 5초간 감소\n"+ChatColor.WHITE + "재사용 대기시간 : 10초\n"+ ChatColor.WHITE , false);
 	
-		aA1 =CreateItem.createItem("노력", ChatColor.GREEN, Material.BOW, ChatColor.WHITE + "기본 : 화살 직격타 피해 : 2\n"+ ChatColor.WHITE + "재사용 대기시간 : 0.25초\n"+ ChatColor.WHITE , false);
-		aA2 =CreateItem.createItem("재능", ChatColor.GREEN, Material.CROSSBOW, ChatColor.WHITE + "기본 : 화살 직격타 피해 : 1\n"+ ChatColor.WHITE + "적 타격 시, 자신의 이동속도가 5초간 증가 (중첩가능)\n"+ ChatColor.WHITE + "재사용 대기시간 : 0.25초", false);
+		aA1 =CreateItem.createItem("정악", ChatColor.GREEN, Material.BOW, 
+				 ChatColor.WHITE + "반경 8블럭 내 대상 1명에게 물리 피해\n"
+				+ ChatColor.AQUA +"패시브 효과 : 화음 : 스킬 사용마다 데미지 10%증가 (3회)\n"
+				+ ChatColor.WHITE+ "화음 종류마다 각각의 버프가 최대 3번 중첩\n"
+				+ ChatColor.BLUE +"으뜸화음 : 4번째 스킬 피해량 10% 증가(12초)\n"
+				+ ChatColor.GREEN+"버금딸림화음 : 정확함 10% 증가 (12초)\n"
+				+ ChatColor.RED +"딸림 화음 : 신속 1단계씩 추가 (12초)\n"
+				+ ChatColor.WHITE +"사거리 3블럭씩 증가", false);
+		aA2 =CreateItem.createItem("아르페지오", ChatColor.GREEN, Material.CROSSBOW,
+				ChatColor.WHITE + "화음 효과를 강화해 즉시 발동\n"
+				+ ChatColor.AQUA + "으뜸 화음 : 대상이 3명으로 증가(12초)\n"
+				+ ChatColor.BLUE + "버금 딸림 화음 : 낙뢰 추가 마법 피해(12초,6초마다 발동)\n"
+				+ ChatColor.RED + "딸림 화음 : 정악 사용시 추가 마법 피해(12초)\n",false);
 		aH1 =CreateItem.createItem("활기", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 피해증가\n"+ ChatColor.WHITE + "기본 화살 직격타 피해가 5 증가합니다.\n"+ ChatColor.WHITE + "재사용 대기시간 : 15초", false);
 		aH2 =CreateItem.createItem("음침", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 은신\n"+ ChatColor.WHITE + "자신의 모습을 7초간 숨깁니다.\n"+ ChatColor.WHITE + "재사용 대기시간 18초", false);
 		

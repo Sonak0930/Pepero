@@ -18,9 +18,11 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -30,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -51,10 +54,10 @@ import net.md_5.bungee.api.ChatColor;
  
 	
 
-public class FireMagiciainSKillEvent implements Listener {
+public class FireMagicianSKillEvent implements Listener {
 
 	private PlayerStatus ps;
-	private Arrow projectile;
+	private Projectile projectile;
 	LivingEntity hitentity;
 	private static Player p;
 	
@@ -73,12 +76,9 @@ public class FireMagiciainSKillEvent implements Listener {
 	@EventHandler
 	public void DamageHandler(EntityDamageByEntityEvent e)
 	{
-		
-		if(e.getDamager() instanceof Arrow)
-		{
-			
-			//엔티티를 타격한 대상 (여기서는 화살)
-			projectile =  (Arrow) e.getDamager();
+
+			//엔티티를 타격한 대상 
+			projectile =   (Projectile) e.getDamager();
 					
 			//공격당한 엔티티
 			hitentity = (LivingEntity)e.getEntity();
@@ -96,19 +96,13 @@ public class FireMagiciainSKillEvent implements Listener {
 			
 		
 		
-			//파괴마법사 화살이 아닌경우 처리하지 않음.
+			//파괴마법사 투사체가 아닌경우 처리하지 않음.
 			if(ps.getJob().equalsIgnoreCase("파괴 마법사"))
 			{
 				DestroyingMagician();
 			
 			}
-			
-			
-			
-			
-		}
-		
-		
+
 		
 	}
 	
@@ -137,10 +131,6 @@ public class FireMagiciainSKillEvent implements Listener {
 			hitentity.setFireTicks(100);
 			hitentity.playEffect(EntityEffect.HURT);
 			hitentity.playEffect(EntityEffect.LOVE_HEARTS);
-			if(hitentity.getFireTicks() > 0)
-			{
-				projectile.setDamage(2);
-			}
 			
 		}
 		
@@ -158,7 +148,7 @@ public class FireMagiciainSKillEvent implements Listener {
 				{
 					
 					MagicalDamage magic = new MagicalDamage();
-					magic.set_coefficient(0.2 + intel * 0.05);
+					magic.set_coefficient(0.35 + intel * 0.05);
 				
 					magic.setUser(p);
 					magic.setEnemy(hitentity);
@@ -177,7 +167,7 @@ public class FireMagiciainSKillEvent implements Listener {
 				{
 					
 					MagicalDamage magic = new MagicalDamage();
-					magic.set_coefficient(0.1 + intel * 0.03);
+					magic.set_coefficient(0.1 + intel* 0.03);
 				
 					magic.setUser(p);
 					magic.setEnemy(hitentity);
@@ -193,10 +183,7 @@ public class FireMagiciainSKillEvent implements Listener {
 			}
 		}
 		
-		else if(isMH2)
-		{
-			
-		}
+	
 	}
 	
 	
@@ -257,7 +244,7 @@ public class FireMagiciainSKillEvent implements Listener {
 				//잃은 체력에 비례한 고정피해를입힘.
 				double lostHp = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()-entity.getHealth();
 				
-				entity.damage(lostHp);
+				entity.damage(lostHp*(Math.sqrt(intel)*0.01+0.1));
 				
 				try {
 					
@@ -276,6 +263,37 @@ public class FireMagiciainSKillEvent implements Listener {
 			}
 			
 		
+	}
+	
+	@EventHandler
+	public void EntityExplode(EntityExplodeEvent e)
+	{
+		if(!(p instanceof Player)) return;
+		
+		try {
+			hitentity = (LivingEntity) e.getEntity();
+		}
+		
+		catch(ClassCastException ex)
+		{
+			return;
+		}
+		
+		
+		MagicalDamage magic = new MagicalDamage();
+	
+		magic.setUser(p);
+		magic.setEnemy(hitentity);
+		magic.setPs();
+	
+		
+		if(hitentity.isGlowing())
+		{	
+			magic.set_coefficient(0.07);
+		}
+		
+		else magic.set_coefficient(0.04);
+		magic.Damage();
 	}
 	
 }
