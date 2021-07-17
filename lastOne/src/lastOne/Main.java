@@ -124,8 +124,8 @@ public class Main extends JavaPlugin implements Listener{
 		
 		AllitemList.add(CreateItem.createItem("Á¤¾Ç", ChatColor.GREEN, Material.BOW, "", false));
 		AllitemList.add(CreateItem.createItem("¾Æ¸£ÆäÁö¿À", ChatColor.GREEN, Material.CROSSBOW,"", false));
-		AllitemList.add(CreateItem.createItem("È°±â", ChatColor.BLUE, Material.ENCHANTED_BOOK,"" , false));
-		AllitemList.add(CreateItem.createItem("À½Ä§", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", false));
+		AllitemList.add(CreateItem.createItem("Çª¸¥ ºÐ¼âÀÚ", ChatColor.BLUE, Material.ENCHANTED_BOOK,"" , false));
+		AllitemList.add(CreateItem.createItem("Çï¸®¿ì½º Çý¼º", ChatColor.BLUE, Material.ENCHANTED_BOOK, "", false));
 		
 		AllitemList.add(CreateItem.createItem("¼þ°íÇÑ Èñ»ý", ChatColor.GREEN, Material.ENCHANTED_GOLDEN_APPLE, "", true));
 		AllitemList.add(CreateItem.createItem("´ÜÁË", ChatColor.GREEN, Material.BLAZE_POWDER, "", true));
@@ -222,6 +222,7 @@ public class Main extends JavaPlugin implements Listener{
 			isStart = false;
 			GamePlayerInfoList.clear();
 			partyList.clear();
+			ForestArcheruseItem.clearCurrentNote();
 		}
 		
 		if (command.getName().equalsIgnoreCase("c"))

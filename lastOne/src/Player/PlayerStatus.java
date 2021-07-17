@@ -19,7 +19,9 @@ public class PlayerStatus
 	double SecondSkillCooldown;
 	State state;
 	
-	int power,intelligence,accuracy;
+	double power;
+	double intelligence;
+	int accuracy;
 	
 	public static HashMap<skilltype, Double> CooldownMap = new HashMap<skilltype,Double>();
 	
@@ -37,21 +39,21 @@ public class PlayerStatus
 		SecondSkillCooldown = ssc;
 	}
 	
-	public void setPower(int p)
+	public void setPower(double d)
 	{
-		power = p;
+		power = d;
 	}
 	
-	public int getPower()
+	public double getPower()
 	{
 		return power;
 	}
-	public void setIntelligence(int i)
+	public void setIntelligence(double power2)
 	{
-		intelligence = i;
+		intelligence = power2;
 	}
 	
-	public int getIntelligence()
+	public double getIntelligence()
 	{
 		return intelligence;
 	}
@@ -127,6 +129,16 @@ public class PlayerStatus
 	public double getSecondSkillCooldown()
 	{
 		return SecondSkillCooldown;
+	}
+	
+	public void setMagicalDefense(double s)
+	{
+		magicalDefense = s;
+	}
+	
+	public void setPhysicalDefense(double s)
+	{
+		physicalDefense = s;
 	}
 }
 

@@ -38,6 +38,7 @@ public class SoulHealeruseItem implements Listener
 	{
 		Player p = e.getPlayer();
 		PlayerStatus ps = Main.findPlayerStat(p);
+		SoulHealerSkillUseEvent.user = p;
 		if(e.getPlayer().getInventory().getItemInMainHand().getType().equals(Material.AIR)) 
 			{
 			

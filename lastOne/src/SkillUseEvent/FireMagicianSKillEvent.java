@@ -77,6 +77,8 @@ public class FireMagicianSKillEvent implements Listener {
 	public void DamageHandler(EntityDamageByEntityEvent e)
 	{
 
+		try
+		{
 			//엔티티를 타격한 대상 
 			projectile =   (Projectile) e.getDamager();
 					
@@ -86,6 +88,14 @@ public class FireMagicianSKillEvent implements Listener {
 			//투사체를 발사한 플레이어 정보
 			p= (Player) projectile.getShooter();
 			inven = p.getInventory();
+		}
+		
+		catch(Exception ex)
+		{
+			
+			return;
+		}
+			
 			
 	
 			

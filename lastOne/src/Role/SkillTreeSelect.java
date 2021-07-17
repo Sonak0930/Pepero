@@ -43,13 +43,42 @@ public class SkillTreeSelect implements Listener
 				+ ChatColor.GREEN+"버금딸림화음 : 정확함 10% 증가 (12초)\n"
 				+ ChatColor.RED +"딸림 화음 : 신속 1단계씩 추가 (12초)\n"
 				+ ChatColor.WHITE +"사거리 3블럭씩 증가", false);
-		aA2 =CreateItem.createItem("아르페지오", ChatColor.GREEN, Material.CROSSBOW,
-				ChatColor.WHITE + "화음 효과를 강화해 즉시 발동\n"
-				+ ChatColor.AQUA + "으뜸 화음 : 대상이 3명으로 증가(12초)\n"
-				+ ChatColor.BLUE + "버금 딸림 화음 : 낙뢰 추가 마법 피해(12초,6초마다 발동)\n"
-				+ ChatColor.RED + "딸림 화음 : 정악 사용시 추가 마법 피해(12초)\n",false);
-		aH1 =CreateItem.createItem("활기", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 피해증가\n"+ ChatColor.WHITE + "기본 화살 직격타 피해가 5 증가합니다.\n"+ ChatColor.WHITE + "재사용 대기시간 : 15초", false);
-		aH2 =CreateItem.createItem("음침", ChatColor.BLUE, Material.ENCHANTED_BOOK, ChatColor.WHITE + "기술 : 은신\n"+ ChatColor.WHITE + "자신의 모습을 7초간 숨깁니다.\n"+ ChatColor.WHITE + "재사용 대기시간 18초", false);
+		aH1 =CreateItem.createItem("피날레", ChatColor.GREEN, Material.CROSSBOW,
+				ChatColor.WHITE + "전방 직선범위에 강력한 음파를  발생시켜\n"
+				+ ChatColor.AQUA + "범위안의 적을 혼란에 빠뜨림.\n"
+				+ ChatColor.AQUA + "혼란에 빠진 적은 잠시동안 무방비상태가 되며\n"
+				+ ChatColor.AQUA + "물리 방어력이 0으로 적용\n"
+				+ ChatColor.BLUE + "벽이나 장애물에 부딪힐 경우 반대방향으로 돌아옴"
+				+ ChatColor.RED + "첫 피해량 : 200%+ 최대체력의 10% 물리피해\n"
+				+ ChatColor.DARK_BLUE+"2타 피해량 300% + 잃은 체력의 10% 물리피해: ",false);
+		aA2 =CreateItem.createItem("푸른 분쇄자", ChatColor.BLUE, Material.ENCHANTED_BOOK, 
+				ChatColor.WHITE + "적 타격시 상대의 물리 방어 2 감소(최대 10중첩)\n"
+				+ ChatColor.WHITE + "타격시 자신의 정확함 2% 증가(최대 10중첩)\n"
+				+ ChatColor.WHITE + "100%의 물리피해\n"
+				+ ChatColor.WHITE + "이동속도 1단계 증가\n"
+				+ ChatColor.WHITE + "가까운 적을 더 멀리 밀쳐냄\n"
+				+ ChatColor.WHITE + "2번 이상 맞출 경우 대상이 빛나며, 혜성 헬리오스가 강화됨.\n"
+				, false);
+			
+		
+		aH2 =CreateItem.createItem("헬리우스 혜성", ChatColor.BLUE, Material.ENCHANTED_BOOK, 
+				ChatColor.WHITE + "포물선을 그리는 화살을 발사해 맞은 1명에게 거리 비례 피해를 입힘\n"
+				+ ChatColor.WHITE + "적과의 거리가 5블럭씩 멀어질 때마다 추가 능력치를 얻음\n"
+				+ ChatColor.WHITE + "적과의 거리가 5블럭씩 멀어질 때마다 추가 능력치를 얻음\n"
+				+ ChatColor.WHITE + "5블럭 이내 : 100%의 물리 피해\n"
+				+ ChatColor.WHITE + "10블럭 이내 : 패시브 치명적인 일격\n"
+				+ ChatColor.WHITE + "[120+정확함 50%~200+정확함 50%]%의 물리 피해를 입힘\n"
+				+ ChatColor.WHITE + "발동 확률이 35% 증가.\n"
+				+ ChatColor.WHITE + "15블럭 이내: 치명적인 일격 확률이 75% 증가\n"
+				+ ChatColor.WHITE + "물리 방어력 [15 + 정확함 10%~35+ 정확함 10%]% 무시\n"
+				+ ChatColor.WHITE + "[150+정확함 75%~ 정확함 250+75%]% 무시\n"
+				+ ChatColor.WHITE + "19블럭 이내: 치명적인 일격 100%\n"
+				+ ChatColor.WHITE + "치명적인 일격 피해량 [170 + 정확함 125%~350+ 정확함 125%]%\n"
+				+ ChatColor.WHITE + "20블럭 이상: 치명적인 일격 피해량 \n"
+				+ ChatColor.WHITE + "[250 + 정확함 250% ~550+ 정확함 250%]%\n"
+				+ ChatColor.WHITE + "쪽빛 혜성 헬리오스 : 푸른 분쇄자 강화형\n"
+				+ ChatColor.WHITE + "헬리오스 혜성의 위력이 square[2.5+정확함 12.25%]배\n"
+				+ ChatColor.WHITE + "재사용 대기시간 18초", false);
 		
 		mA1 = CreateItem.createItem("혼돈", ChatColor.BLUE, Material.FIRE_CHARGE, ChatColor.WHITE + "기본 : 마법 직격타 피해 : 1\n"
 				+ ChatColor.WHITE + "투사체를 발사해 맞은 적에게 '강화화상' 상태에 빠트립니다.\n"
@@ -347,7 +376,7 @@ public class SkillTreeSelect implements Listener
 		
 		
 		//궁수
-		else if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GREEN + "노력"))
+		else if(e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GREEN + "정악"))
 		{
 		
 			ps.SkillTreeFirst = true;
@@ -358,7 +387,7 @@ public class SkillTreeSelect implements Listener
 		
 		
 		
-		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GREEN + "재능"))
+		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.BLUE + "푸른 분쇄자"))
 		{
 		
 			ps.SkillTreeFirst = false;
@@ -370,7 +399,7 @@ public class SkillTreeSelect implements Listener
 		
 		
 		
-		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.BLUE + "활기"))
+		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.GREEN + "아르페지오"))
 		{
 		
 			ps.SkillTreeSecond = true;
@@ -382,7 +411,7 @@ public class SkillTreeSelect implements Listener
 		
 		
 		
-		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.BLUE + "음침"))
+		else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.BLUE + "헬리우스 혜성"))
 		{
 		
 			ps.SkillTreeSecond = false;
@@ -502,7 +531,7 @@ public class SkillTreeSelect implements Listener
 							
 							else p.getInventory().addItem(aH2);
 							
-							ps.setAccuracy(10);
+							ps.setPower(10);
 						}
 						
 						else if(ps.getJob().contentEquals("영혼 치유사"))

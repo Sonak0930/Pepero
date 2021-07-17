@@ -8,5 +8,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="C:/Users/Created/Desktop/spigot/annotations-13.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Created/Desktop/spigot/spigot-1.16.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Created/Desktop/spigot1.17.1/spigot-1.17.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
